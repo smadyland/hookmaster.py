@@ -6,3 +6,4 @@ add .env file for bot token instead of hardcoding it
 add a guild channel scraper and write it to a file for the gen to make 15 webhooks in all of them  
 add a hardcoded chatspam to flooder  
 make a seperate option for a pinger flooder?  
+add more options in general  
