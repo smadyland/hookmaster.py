@@ -40,10 +40,10 @@ def webhook_gen():
     print("Wrote webhook URL to webhooks.txt successfully!")
 
 def message_send():
-with open('webhooks.txt', 'r') as f:
-    webhook_links = [line.strip() for line in f.readlines()]
+    with open('webhooks.txt', 'r') as f:
+        webhook_links = [line.strip() for line in f.readlines()]
 
-message = input("What would you like the webhooks to say?: ")
+    message = input("What would you like the webhooks to say?: ")
     messages_per_second = float(input("How many messages per second? (default = 1, 0 for instant): ") or 1)
 
     if messages_per_second == 0:
@@ -58,6 +58,7 @@ message = input("What would you like the webhooks to say?: ")
                 hook = dhooks.Webhook(link)
                 hook.send(message)
             time.sleep(delay)
+            print("Sending messages!")
 
 def run_script(num):
     if num == 1:
