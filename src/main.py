@@ -1,6 +1,6 @@
-import dhooks
+import threading
 import requests
-import json
+import dhooks
 import random
 import string
 import time
@@ -8,7 +8,6 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-
 TOKEN = os.getenv("DISCORD_TOKEN")
 
 def webhook_gen():
@@ -42,7 +41,7 @@ def webhook_gen():
             with open("webhooks.txt", "a") as f:
                 f.write(webhook_url + "\n")
                 time.sleep(5)
-    print("Wrote webhook URL to webhooks.txt successfully!")
+    print("Wrote webhook URL's to webhooks.txt successfully!")
 
 def message_send():
     with open('webhooks.txt', 'r') as f:
@@ -51,17 +50,29 @@ def message_send():
     message = input("What would you like the webhooks to say?: ")
     messages_per_second = float(input("How many messages per second? (default = 1, 0 for instant): ") or 1)
 
+    def send_message(link):
+        hook = dhooks.Webhook(link)
+        hook.send(message)
+
     if messages_per_second == 0:
         while True:
+            threads = []
             for link in webhook_links:
-                hook = dhooks.Webhook(link)
-                hook.send(message)
+                t = threading.Thread(target=send_message, args=(link,))
+                t.start()
+                threads.append(t)
+            for t in threads:
+                t.join()
     else:
         delay = 1.0 / messages_per_second
         while True:
+            threads = []
             for link in webhook_links:
-                hook = dhooks.Webhook(link)
-                hook.send(message)
+                t = threading.Thread(target=send_message, args=(link,))
+                t.start()
+                threads.append(t)
+            for t in threads:
+                t.join()
             time.sleep(delay)
             print("Sending messages!")
 
