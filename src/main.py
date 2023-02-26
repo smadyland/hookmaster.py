@@ -5,17 +5,22 @@ import random
 import string
 import time
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+TOKEN = os.getenv("DISCORD_TOKEN")
 
 def webhook_gen():
     def generate_random_string(length):
         return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
 
-    channel_id = input('Enter the webhooks channel ID: ')
+    channel_id = input('Enter the channel ID: ')
     num_webhooks = int(input('Enter the number of webhooks to create (max 15): '))
-    webhook_name = input('Enter the name for the webhooks (press enter for default): ')
+    webhook_name = input('Enter the name for the webhooks (press enter for random): ')
 
     url = f"https://discord.com/api/v9/channels/{channel_id}/webhooks"
-    headers = {"Content-Type": "application/json", "Authorization": "Bot <YOUR_BOT_TOKEN>"}
+    headers = {"Content-Type": "application/json", "Authorization": f"Bot " + TOKEN}
 
     for i in range(num_webhooks):
         if webhook_name:
