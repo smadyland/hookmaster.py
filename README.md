@@ -1,5 +1,5 @@
 # hookmaster
-webhook multitool for discord featuring a powerfull webhook genertor & flooder (2.22.23)  
+webhook multitool for discord featuring a simple but powerfull webhook genertor & flooder   
 this is in beta and will be consistantly updated.
 # todo list;
 ~~make one simple app instead of mutliple~~ done 2.24.23  
