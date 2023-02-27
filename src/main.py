@@ -43,6 +43,39 @@ def webhook_gen():
                 time.sleep(5)
     print("Wrote webhook URL's to webhooks.txt successfully!")
 
+def pinger_flooder():
+    with open('webhooks.txt', 'r') as f:
+        webhook_links = [line.strip() for line in f.readlines()]
+
+    message = "@everyone trolololo threading so fast"
+    messages_per_second = float(input("How many messages per second? (default = 1, 0 for instant): ") or 1)
+
+    def send_message(link):
+        hook = dhooks.Webhook(link)
+        hook.send(message)
+
+    if messages_per_second == 0:
+        while True:
+            threads = []
+            for link in webhook_links:
+                t = threading.Thread(target=send_message, args=(link,))
+                t.start()
+                threads.append(t)
+            for t in threads:
+                t.join()
+    else:
+        delay = 1.0 / messages_per_second
+        while True:
+            threads = []
+            for link in webhook_links:
+                t = threading.Thread(target=send_message, args=(link,))
+                t.start()
+                threads.append(t)
+            for t in threads:
+                t.join()
+            time.sleep(delay)
+            print("Sending messages!")
+
 def message_send():
     with open('webhooks.txt', 'r') as f:
         webhook_links = [line.strip() for line in f.readlines()]
@@ -81,6 +114,8 @@ def run_script(num):
         webhook_gen()
     elif num == 2:
         message_send()
+    elif num == 3:
+        pinger_flooder()
     elif num == 0:
         print("Exiting the program")
         time.sleep(0.4)
@@ -97,7 +132,8 @@ while True:
                                                    |    `---'
                                                    """)
     print("Enter 1 to execute the webhook generator")
-    print("Enter 2 to execute the message flooder")
+    print("Enter 2 to execute the custom message flooder")
+    print("Enter 3 to execute the pinger flooder")
     print("Enter 0 to exit the program")
 
     user_input = int(input("Enter your selection: "))
