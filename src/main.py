@@ -17,6 +17,8 @@ def webhook_gen():
     channel_id = input('Enter the channel ID: ')
     num_webhooks = int(input('Enter the number of webhooks to create (max 15): '))
     webhook_name = input('Enter the name for the webhooks (press enter for random): ')
+    proxy_url = 'https://api.proxyscrape.com/v2/?request=getproxies&protocol=socks4&timeout=10000&country=all&simplified=true'
+    proxies = {'socks4': proxy_url}
 
     url = f"https://discord.com/api/v9/channels/{channel_id}/webhooks"
     headers = {"Content-Type": "application/json", "Authorization": f"Bot " + TOKEN}
@@ -27,7 +29,7 @@ def webhook_gen():
         else:
             name = generate_random_string(8)
         payload = {"name": name}
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post(url, headers=headers, json=payload, proxies=proxies)
         if response.status_code != 200:
             print(f"Failed to create webhook: {response.text}")
         else:
@@ -40,8 +42,27 @@ def webhook_gen():
 
             with open("webhooks.txt", "a") as f:
                 f.write(webhook_url + "\n")
-                time.sleep(5)
     print("Wrote webhook URL's to webhooks.txt successfully!")
+
+def delete_webhooks():
+    channel_id = input("Enter the ID of the channel to delete webhooks from: ")
+    url = f"https://discord.com/api/v9/channels/{channel_id}/webhooks"
+    headers = {"Authorization": f"Bot {TOKEN}"}
+    response = requests.get(url, headers=headers)
+    proxy_url = 'https://api.proxyscrape.com/v2/?request=getproxies&protocol=socks4&timeout=10000&country=all&simplified=true'
+    proxies = {'socks4': proxy_url}
+    if response.status_code != 200:
+        print(f"Failed to get webhooks: {response.text}")
+        return
+    webhooks = response.json()
+    for webhook in webhooks:
+        webhook_id = webhook["id"]
+        webhook_url = f"https://discord.com/api/webhooks/{webhook_id}"
+        response = requests.delete(webhook_url, headers=headers, proxies=proxies)
+        if response.status_code != 204:
+            print(f"Failed to delete webhook {webhook_id}: {response.text}")
+        else:
+            print(f"Deleted webhook {webhook_id}")
 
 def pinger_flooder():
     with open('webhooks.txt', 'r') as f:
@@ -113,12 +134,14 @@ def run_script(num):
     if num == 1:
         webhook_gen()
     elif num == 2:
-        message_send()
+        delete_webhooks()
     elif num == 3:
+        message_send()
+    elif num == 4:
         pinger_flooder()
     elif num == 0:
         print("Exiting the program")
-        time.sleep(0.4)
+        time.sleep(0.3)
         exit()
     else:
         print("Invalid option")
@@ -132,8 +155,9 @@ while True:
                                                    |    `---'
                                                    """)
     print("Enter 1 to execute the webhook generator")
-    print("Enter 2 to execute the custom message flooder")
-    print("Enter 3 to execute the pinger flooder")
+    print("Enter 2 to execute the webhook deleter")
+    print("Enter 3 to execute the custom message flooder")
+    print("Enter 4 to execute the ping flooder")
     print("Enter 0 to exit the program")
 
     user_input = int(input("Enter your selection: "))
