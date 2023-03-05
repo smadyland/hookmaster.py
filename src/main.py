@@ -44,6 +44,26 @@ def webhook_gen():
                 f.write(webhook_url + "\n")
     print("Wrote webhook URL's to webhooks.txt successfully!")
 
+def checker():
+    with open("webhooks.txt", "r") as f:
+        webhooks = f.read().splitlines()
+
+    working_webhooks = []
+    for webhook in webhooks:
+        try:
+            response = requests.get(webhook)
+            if response.status_code >= 200 and response.status_code < 300:
+                working_webhooks.append(webhook)
+        except:
+            pass
+
+    num_checked = len(webhooks)
+    num_deleted = len(webhooks) - len(working_webhooks)
+
+    with open("webhooks.txt", "w") as f:
+        f.write("\n".join(working_webhooks))
+    print(f"Successfully checked through {num_checked} webhooks, and deleted {num_deleted} broken ones!")
+
 def delete_webhooks():
     channel_id = input("Enter the ID of the channel to delete webhooks from: ")
     url = f"https://discord.com/api/v9/channels/{channel_id}/webhooks"
@@ -68,7 +88,7 @@ def pinger_flooder():
     with open('webhooks.txt', 'r') as f:
         webhook_links = [line.strip() for line in f.readlines()]
 
-    message = "@everyone trolololo threading so fast"
+    message = "@everyone hookmaster winning"
     messages_per_second = float(input("How many messages per second? (default = 1, 0 for instant): ") or 1)
 
     def send_message(link):
@@ -134,10 +154,12 @@ def run_script(num):
     if num == 1:
         webhook_gen()
     elif num == 2:
-        delete_webhooks()
+        checker()
     elif num == 3:
-        message_send()
+        delete_webhooks()
     elif num == 4:
+        message_send()
+    elif num == 5:
         pinger_flooder()
     elif num == 0:
         print("Exiting the program")
@@ -155,9 +177,10 @@ while True:
                                                    |    `---'
                                                    """)
     print("Enter 1 to execute the webhook generator")
-    print("Enter 2 to execute the webhook deleter")
-    print("Enter 3 to execute the custom message flooder")
-    print("Enter 4 to execute the ping flooder")
+    print("Enter 2 to execute the webhook checker")
+    print("Enter 3 to execute the webhook deleter")
+    print("Enter 4 to execute the custom message flooder")
+    print("Enter 5 to execute the ping flooder")
     print("Enter 0 to exit the program")
 
     user_input = int(input("Enter your selection: "))
