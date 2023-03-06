@@ -1,5 +1,5 @@
 # hookmaster
-## webhook multitool for discord ft guild fucker 3000, a lightweight mini nuker
+## webhook multitool for discord ft guild ~~fucker~~ 3000, a lightweight mini nuker
 ### !!THIS IS IN BETA AND WILL BE CONSTANTLY UPDATED!!
 # todo list
 * make it look prettier (better logo?, colorama)
