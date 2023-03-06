@@ -1,6 +1,8 @@
+import subprocess
 import threading
 import requests
 import dhooks
+import ctypes
 import random
 import string
 import time
@@ -10,16 +12,16 @@ from dotenv import load_dotenv
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
+ctypes.windll.kernel32.SetConsoleTitleW("hookmaster.py")
+
 def webhook_gen():
     def generate_random_string(length):
         return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
-
-    channel_id = input('Enter the channel ID: ')
-    num_webhooks = int(input('Enter the number of webhooks to create (max 15): '))
-    webhook_name = input('Enter the name for the webhooks (press enter for random): ')
+    channel_id = input('enter the channel ID: ')
+    num_webhooks = int(input('enter the number of webhooks to create (max 15 per channel): '))
+    webhook_name = input('enter the name for the webhooks (press enter for random): ')
     proxy_url = 'https://api.proxyscrape.com/v2/?request=getproxies&protocol=socks4&timeout=10000&country=all&simplified=true'
     proxies = {'socks4': proxy_url}
-
     url = f"https://discord.com/api/v9/channels/{channel_id}/webhooks"
     headers = {"Content-Type": "application/json", "Authorization": f"Bot " + TOKEN}
 
@@ -31,18 +33,18 @@ def webhook_gen():
         payload = {"name": name}
         response = requests.post(url, headers=headers, json=payload, proxies=proxies)
         if response.status_code != 200:
-            print(f"Failed to create webhook: {response.text}")
+            print(f"failed to create webhook: {response.text}")
         else:
             response_json = response.json()
             webhook_id = response_json["id"]
             webhook_token = response_json["token"]
 
             webhook_url = f"https://discord.com/api/webhooks/{webhook_id}/{webhook_token}"
-            print(f"Successfully created webhook: {webhook_url}")
+            print(f"successfully created webhook: {webhook_url}")
 
             with open("webhooks.txt", "a") as f:
                 f.write(webhook_url + "\n")
-    print("Wrote webhook URL's to webhooks.txt successfully!")
+    print("wrote webhook URL's to webhooks.txt successfully!")
 
 def checker():
     with open("webhooks.txt", "r") as f:
@@ -62,34 +64,36 @@ def checker():
 
     with open("webhooks.txt", "w") as f:
         f.write("\n".join(working_webhooks))
-    print(f"Successfully checked through {num_checked} webhooks, and deleted {num_deleted} broken ones!")
+    print(f"successfully checked through {num_checked} webhook(s), and deleted {num_deleted} broken one(s)!")
 
 def delete_webhooks():
-    channel_id = input("Enter the ID of the channel to delete webhooks from: ")
+    channel_id = input("enter the ID of the channel to delete webhooks from: ")
     url = f"https://discord.com/api/v9/channels/{channel_id}/webhooks"
     headers = {"Authorization": f"Bot {TOKEN}"}
     response = requests.get(url, headers=headers)
     proxy_url = 'https://api.proxyscrape.com/v2/?request=getproxies&protocol=socks4&timeout=10000&country=all&simplified=true'
     proxies = {'socks4': proxy_url}
+
     if response.status_code != 200:
-        print(f"Failed to get webhooks: {response.text}")
+        print(f"failed to get webhooks: {response.text}")
         return
     webhooks = response.json()
+
     for webhook in webhooks:
         webhook_id = webhook["id"]
         webhook_url = f"https://discord.com/api/webhooks/{webhook_id}"
         response = requests.delete(webhook_url, headers=headers, proxies=proxies)
         if response.status_code != 204:
-            print(f"Failed to delete webhook {webhook_id}: {response.text}")
+            print(f"failed to delete webhook {webhook_id}: {response.text}")
         else:
-            print(f"Deleted webhook {webhook_id}")
+            print(f"deleted webhook {webhook_id}")
 
 def pinger_flooder():
     with open('webhooks.txt', 'r') as f:
         webhook_links = [line.strip() for line in f.readlines()]
 
     message = "@everyone hookmaster winning"
-    messages_per_second = float(input("How many messages per second? (default = 1, 0 for instant): ") or 1)
+    messages_per_second = float(input("how many messages per second? (default = 1, 0 for instant): ") or 1)
 
     def send_message(link):
         hook = dhooks.Webhook(link)
@@ -115,14 +119,15 @@ def pinger_flooder():
             for t in threads:
                 t.join()
             time.sleep(delay)
-            print("Sending messages!")
+            print("sending messages!")
 
 def message_send():
+    webhook_links = []
     with open('webhooks.txt', 'r') as f:
-        webhook_links = [line.strip() for line in f.readlines()]
+        webhook_links.extend([line.strip() for line in f.readlines()])
 
-    message = input("What would you like the webhooks to say?: ")
-    messages_per_second = float(input("How many messages per second? (default = 1, 0 for instant): ") or 1)
+    message = input("what would you like the webhooks to say?: ")
+    messages_per_second = float(input("how many messages per second? (default = 1, 0 for instant): ") or 1)
 
     def send_message(link):
         hook = dhooks.Webhook(link)
@@ -148,7 +153,7 @@ def message_send():
             for t in threads:
                 t.join()
             time.sleep(delay)
-            print("Sending messages!")
+            print("sending messages!")
 
 def run_script(num):
     if num == 1:
@@ -158,15 +163,17 @@ def run_script(num):
     elif num == 3:
         delete_webhooks()
     elif num == 4:
-        message_send()
+        subprocess.Popen(['start', 'cmd', '/c', 'python', 'guildfucker.py'], shell=True)
     elif num == 5:
+        message_send()
+    elif num == 6:
         pinger_flooder()
     elif num == 0:
-        print("Exiting the program")
+        print("exiting the program")
         time.sleep(0.3)
         exit()
     else:
-        print("Invalid option")
+        print("invalid option")
 
 while True:
     print("""
@@ -176,15 +183,16 @@ while True:
 `   '`---'`---'`   `` ' '`---^`---'`---'`---'`    o|---'`---|
                                                    |    `---'
                                                    """)
-    print("Enter 1 to execute the webhook generator")
-    print("Enter 2 to execute the webhook checker")
-    print("Enter 3 to execute the webhook deleter")
-    print("Enter 4 to execute the custom message flooder")
-    print("Enter 5 to execute the ping flooder")
-    print("Enter 0 to exit the program")
+    print("enter 1 to execute the webhook generator")
+    print("enter 2 to execute the webhook checker")
+    print("enter 3 to execute the webhook deleter")
+    print("enter 4 to run the guild fucker 3000")
+    print("enter 5 to execute the custom message flooder")
+    print("enter 6 to execute the pinger flooder")
+    print("enter 0 to exit the program")
 
-    user_input = int(input("Enter your selection: "))
+    user_input = int(input("enter your selection...: "))
     run_script(user_input)
 
-    input("Press enter to go back to the option selections ")
+    input("press enter to go back to the option selections. ")
     os.system('cls' if os.name == 'nt' else 'clear')
