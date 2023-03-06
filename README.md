@@ -1,8 +1,8 @@
 # hookmaster
-## webhook multitool for discord ft a lightweight generator, flooder, and more
+## webhook multitool for discord ft guild fucker 3000, a lightweight mini nuker
 ### !!THIS IS IN BETA AND WILL BE CONSTANTLY UPDATED!!
 # todo list
-* guild fucker 3000
+* make it look prettier (better logo?, colorama)
 ## features done so far
 * ~~make generator~~  
 * ~~make spammer~~
@@ -13,3 +13,4 @@
 * ~~add proxy support~~ done 2.27.23  
 * ~~add webhook deleter~~ done 2.27.23  
 * ~~add webhook checker~~ done 3.5.23  
+* ~~guild fucker 3000~~ done 3.5.23
