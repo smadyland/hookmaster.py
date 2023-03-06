@@ -93,7 +93,7 @@ def pinger_flooder():
         webhook_links = [line.strip() for line in f.readlines()]
 
     message = "@everyone hookmaster winning"
-    messages_per_second = float(input("how many messages per second? (default = 1, 0 for instant): ") or 1)
+    messages_per_second = float(input("how many messages per second? (default = 1, 0 = instant): ") or 1)
 
     def send_message(link):
         hook = dhooks.Webhook(link)
