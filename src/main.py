@@ -163,7 +163,7 @@ def run_script(num):
     elif num == 3:
         delete_webhooks()
     elif num == 4:
-        subprocess.Popen(['start', 'cmd', '/c', 'python', 'guildfucker.py'], shell=True)
+        subprocess.Popen(['start', 'cmd', '/c', 'python', 'terminator.py'], shell=True)
     elif num == 5:
         message_send()
     elif num == 6:
@@ -186,7 +186,7 @@ while True:
     print("enter 1 to execute the webhook generator")
     print("enter 2 to execute the webhook checker")
     print("enter 3 to execute the webhook deleter")
-    print("enter 4 to run the guild fucker 3000")
+    print("enter 4 to run terminator.py")
     print("enter 5 to execute the custom message flooder")
     print("enter 6 to execute the pinger flooder")
     print("enter 0 to exit the program")
