@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
-ctypes.windll.kernel32.SetConsoleTitleW("guild fucker 3000")
+ctypes.windll.kernel32.SetConsoleTitleW("terminator.py")
 
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
@@ -14,8 +14,7 @@ logging.disable(logging.CRITICAL)
 
 @client.event
 async def on_ready():
-    print("""ready to fuck some guilds
-run !wipe in the guild that is ready for some fucking""")
+    print("bot ready, run '!wipe' in the server that has seen better days - arnold schwarzenegger")
 
 @client.event
 async def on_message(message):
